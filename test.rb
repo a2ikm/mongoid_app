@@ -92,9 +92,9 @@ assert_equal 1, client[:animals].find(species: "rabbit").count
 
 # Insert and count with ruby driver
 
-client[:animals].insert_many([
-  { species: "bear" },
-  { species: :bear },
-])
+client[:animals].insert_one({ species: "bear", created_at: Time.now })
+client[:animals].insert_one({ species: :bear,  created_at: Time.now })
 assert_equal 2, client[:animals].find(species: :bear).count
 assert_equal 2, client[:animals].find(species: "bear").count
+
+assert_equal :bear, client[:animals].find({}, sort: { created_at: -1 }).first["species"]
