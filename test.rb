@@ -13,6 +13,8 @@ assert_equal :cat, cat_reloaded.species
 cat_other = StringAnimal.find(cat.id)
 assert_equal "cat", cat_other.species
 
+cat_other.save!
+assert_equal :cat, SymbolAnimal.find(cat.id).species
 
 # Create with string field
 
@@ -24,3 +26,6 @@ assert_equal "dog", dog_reloaded.species
 
 dog_other = SymbolAnimal.find(dog.id)
 assert_equal :dog, dog_other.species
+
+dog_other.save!
+assert_equal "dog", StringAnimal.find(dog.id).species
