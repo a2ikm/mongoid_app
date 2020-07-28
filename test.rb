@@ -89,3 +89,12 @@ assert_match /species: :rabbit/, rabbit_updated.inspect
 assert_equal :rabbit, client[:animals].find(_id: rabbit.id).first["species"]
 assert_equal 1, client[:animals].find(species: :rabbit).count
 assert_equal 1, client[:animals].find(species: "rabbit").count
+
+# Insert and count with ruby driver
+
+client[:animals].insert_many([
+  { species: "bear" },
+  { species: :bear },
+])
+assert_equal 2, client[:animals].find(species: :bear).count
+assert_equal 2, client[:animals].find(species: "bear").count
