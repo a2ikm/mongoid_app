@@ -9,4 +9,6 @@ services:
       - mongo
   mongo:
     image: mongo:3.6
+    ports:
+      - 27017:27017
 
