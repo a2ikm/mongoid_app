@@ -1,4 +1,4 @@
-class AnotherAnimal
+class StringAnimal
   include Mongoid::Document
   store_in collection: 'animals'
 
