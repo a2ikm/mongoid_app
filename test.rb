@@ -29,3 +29,18 @@ assert_equal :dog, dog_other.species
 
 dog_other.save!
 assert_equal "dog", StringAnimal.find(dog.id).species
+
+# Update symbol to string
+
+bird = SymbolAnimal.create(species: "bird")
+assert_equal :bird, bird.species
+assert_match /species: :bird/, bird.inspect
+
+bird_other = StringAnimal.find(bird.id)
+bird_other.species = "tori"
+bird_other.save!
+assert_match /species: "tori"/, bird_other.inspect
+
+bird_updated = SymbolAnimal.find(bird.id)
+assert_equal :tori, bird_updated.species
+assert_match /species: "tori"/, bird_updated.inspect
