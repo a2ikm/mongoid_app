@@ -52,3 +52,20 @@ assert_match /species: "tori"/, bird_other.inspect
 bird_updated = SymbolAnimal.find(bird.id)
 assert_equal :tori, bird_updated.species
 assert_match /species: "tori"/, bird_updated.inspect
+
+# Update other field
+
+rabbit = SymbolAnimal.create(species: "rabbit", foo: true)
+assert_equal :rabbit, rabbit.species
+assert_match /species: :rabbit/, rabbit.inspect
+
+rabbit_other = StringAnimal.find(rabbit.id)
+assert_equal "rabbit", rabbit_other.species
+assert_match /species: :rabbit/, rabbit_other.inspect
+
+rabbit_other.foo = !rabbit_other.foo
+rabbit_other.save!
+
+rabbit_updated = SymbolAnimal.find(rabbit.id)
+assert_equal :rabbit, rabbit_updated.species
+assert_match /species: :rabbit/, rabbit_updated.inspect

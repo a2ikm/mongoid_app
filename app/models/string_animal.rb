@@ -4,4 +4,5 @@ class StringAnimal
 
   include Mongoid::Timestamps
   field :species, type: String
+  field :foo,     type: Boolean
 end

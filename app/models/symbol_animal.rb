@@ -4,4 +4,5 @@ class SymbolAnimal
 
   include Mongoid::Timestamps
   field :species, type: Symbol
+  field :foo,     type: Boolean
 end
