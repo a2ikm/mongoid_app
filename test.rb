@@ -2,6 +2,7 @@ require "test/unit/assertions"
 include Test::Unit::Assertions
 
 client = SymbolAnimal.collection.client
+client[:animals].find.delete_many
 
 # Create with symbol field
 
@@ -22,6 +23,8 @@ assert_equal :cat, cat_updated.species
 assert_match /species: :cat/, cat_updated.inspect
 
 assert_equal :cat, client[:animals].find(_id: cat.id).first["species"]
+assert_equal 1, client[:animals].find(species: :cat).count
+assert_equal 1, client[:animals].find(species: "cat").count
 
 # Create with string field
 
@@ -42,6 +45,8 @@ assert_equal "dog", dog_updated.species
 assert_match /species: "dog"/, dog_updated.inspect
 
 assert_equal "dog", client[:animals].find(_id: dog.id).first["species"]
+assert_equal 1, client[:animals].find(species: :dog).count
+assert_equal 1, client[:animals].find(species: "dog").count
 
 # Update symbol to string
 
@@ -59,6 +64,10 @@ assert_equal :tori, bird_updated.species
 assert_match /species: "tori"/, bird_updated.inspect
 
 assert_equal "tori", client[:animals].find(_id: bird.id).first["species"]
+assert_equal 0, client[:animals].find(species: :bird).count
+assert_equal 0, client[:animals].find(species: "bird").count
+assert_equal 1, client[:animals].find(species: :tori).count
+assert_equal 1, client[:animals].find(species: "tori").count
 
 # Update other field
 
@@ -78,3 +87,5 @@ assert_equal :rabbit, rabbit_updated.species
 assert_match /species: :rabbit/, rabbit_updated.inspect
 
 assert_equal :rabbit, client[:animals].find(_id: rabbit.id).first["species"]
+assert_equal 1, client[:animals].find(species: :rabbit).count
+assert_equal 1, client[:animals].find(species: "rabbit").count
