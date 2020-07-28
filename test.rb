@@ -1,6 +1,7 @@
 require "test/unit/assertions"
 include Test::Unit::Assertions
 
+client = SymbolAnimal.collection.client
 
 # Create with symbol field
 
@@ -20,6 +21,8 @@ cat_updated = SymbolAnimal.find(cat.id)
 assert_equal :cat, cat_updated.species
 assert_match /species: :cat/, cat_updated.inspect
 
+assert_equal :cat, client[:animals].find(_id: cat.id).first["species"]
+
 # Create with string field
 
 dog = StringAnimal.create(species: "dog")
@@ -38,6 +41,8 @@ dog_updated = StringAnimal.find(dog.id)
 assert_equal "dog", dog_updated.species
 assert_match /species: "dog"/, dog_updated.inspect
 
+assert_equal "dog", client[:animals].find(_id: dog.id).first["species"]
+
 # Update symbol to string
 
 bird = SymbolAnimal.create(species: "bird")
@@ -52,6 +57,8 @@ assert_match /species: "tori"/, bird_other.inspect
 bird_updated = SymbolAnimal.find(bird.id)
 assert_equal :tori, bird_updated.species
 assert_match /species: "tori"/, bird_updated.inspect
+
+assert_equal "tori", client[:animals].find(_id: bird.id).first["species"]
 
 # Update other field
 
@@ -69,3 +76,5 @@ rabbit_other.save!
 rabbit_updated = SymbolAnimal.find(rabbit.id)
 assert_equal :rabbit, rabbit_updated.species
 assert_match /species: :rabbit/, rabbit_updated.inspect
+
+assert_equal :rabbit, client[:animals].find(_id: rabbit.id).first["species"]
