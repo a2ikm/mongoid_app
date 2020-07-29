@@ -111,3 +111,21 @@ assert_equal 2, client[:animals].find(species: :bear).count
 assert_equal 2, client[:animals].find(species: "bear").count
 
 assert_equal :bear, client[:animals].find({}, sort: { created_at: -1 }).first["species"]
+
+# Stringify all inputs / outputs
+
+# for serialization
+class Symbol
+  def bson_type
+    BSON::String::BSON_TYPE
+  end
+end
+
+# for deserialization
+BSON::Registry.register(BSON::Symbol::BSON_TYPE, ::String)
+
+assert_match /species: "cat"/, SymbolAnimal.find(cat.id).inspect
+assert_match /species: "dog"/, SymbolAnimal.find(dog.id).inspect
+assert_match /species: "tori"/, SymbolAnimal.find(bird.id).inspect
+assert_match /species: "rabbit"/, SymbolAnimal.find(rabbit.id).inspect
+assert_equal "bear", client[:animals].find({}, sort: { created_at: -1 }).first["species"]
