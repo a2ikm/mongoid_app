@@ -124,6 +124,12 @@ begin
     end
   end
 
+  assert_match /species: :cat/, SymbolAnimal.find(cat.id).inspect
+  assert_match /species: "dog"/, SymbolAnimal.find(dog.id).inspect
+  assert_match /species: "tori"/, SymbolAnimal.find(bird.id).inspect
+  assert_match /species: :rabbit/, SymbolAnimal.find(rabbit.id).inspect
+
+  # new documents are inserted in String
   lion = SymbolAnimal.create(species: :lion)
   assert_equal :lion, lion.species
   assert_equal :lion, lion.attributes["species"]
@@ -149,11 +155,46 @@ begin
   original_type = BSON::Registry.get(BSON::Symbol::BSON_TYPE)
   BSON::Registry.register(BSON::Symbol::BSON_TYPE, ::String)
 
+  # already inserted documents are retrieved in String
+
   assert_match /species: "cat"/, SymbolAnimal.find(cat.id).inspect
   assert_match /species: "dog"/, SymbolAnimal.find(dog.id).inspect
   assert_match /species: "tori"/, SymbolAnimal.find(bird.id).inspect
   assert_match /species: "rabbit"/, SymbolAnimal.find(rabbit.id).inspect
   assert_match /species: "lion"/, SymbolAnimal.find(lion.id).inspect
+
+  # Symbol documents are inserted in Symbol, but retrieved in String
+
+  tiger = SymbolAnimal.create(species: :tiger)
+  assert_equal :tiger, tiger.species
+  assert_equal :tiger, tiger.attributes["species"]
+  assert_match /species: :tiger/, tiger.inspect
+
+  tiger_reloaded = SymbolAnimal.find(tiger.id)
+  assert_equal :tiger, tiger_reloaded.species
+  assert_equal "tiger", tiger_reloaded.attributes["species"]
+  assert_match /species: "tiger"/, tiger_reloaded.inspect
+
+  tiger_other = StringAnimal.find(tiger.id)
+  assert_equal "tiger", tiger_other.species
+  assert_equal "tiger", tiger_other.attributes["species"]
+  assert_match /species: "tiger"/, tiger_other.inspect
+
+  # String documents are inserted and retrieved in String
+
+  puma = StringAnimal.create(species: "puma")
+  assert_equal "puma", puma.species
+  assert_equal "puma", puma.attributes["species"]
+
+  puma_reloaded = StringAnimal.find(puma.id)
+  assert_equal "puma", puma_reloaded.species
+  assert_equal "puma", puma_reloaded.attributes[:species]
+  assert_match /species: "puma"/, puma_reloaded.inspect
+
+  puma_other = SymbolAnimal.find(puma.id)
+  assert_equal :puma, puma_other.species
+  assert_equal "puma", puma_other.attributes[:species]
+  assert_match /species: "puma"/, puma_other.inspect
 ensure
   BSON::Registry.register(BSON::Symbol::BSON_TYPE, original_type)
 end
