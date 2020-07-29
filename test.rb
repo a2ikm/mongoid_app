@@ -8,18 +8,22 @@ client[:animals].find.delete_many
 
 cat = SymbolAnimal.create(species: :cat)
 assert_equal :cat, cat.species
+assert_equal :cat, cat.attributes["species"]
 
 cat_reloaded = SymbolAnimal.find(cat.id)
 assert_equal :cat, cat_reloaded.species
+assert_equal :cat, cat_reloaded.attributes[:species]
 assert_match /species: :cat/, cat_reloaded.inspect
 
 cat_other = StringAnimal.find(cat.id)
 assert_equal "cat", cat_other.species
+assert_equal :cat, cat_other.attributes[:species]
 assert_match /species: :cat/, cat_other.inspect
 
 cat_other.save!
 cat_updated = SymbolAnimal.find(cat.id)
 assert_equal :cat, cat_updated.species
+assert_equal :cat, cat_updated.attributes[:species]
 assert_match /species: :cat/, cat_updated.inspect
 
 assert_equal :cat, client[:animals].find(_id: cat.id).first["species"]
@@ -30,18 +34,22 @@ assert_equal 1, client[:animals].find(species: "cat").count
 
 dog = StringAnimal.create(species: "dog")
 assert_equal "dog", dog.species
+assert_equal "dog", dog.attributes["species"]
 
 dog_reloaded = StringAnimal.find(dog.id)
 assert_equal "dog", dog_reloaded.species
+assert_equal "dog", dog_reloaded.attributes[:species]
 assert_match /species: "dog"/, dog_reloaded.inspect
 
 dog_other = SymbolAnimal.find(dog.id)
 assert_equal :dog, dog_other.species
+assert_equal "dog", dog_other.attributes[:species]
 assert_match /species: "dog"/, dog_other.inspect
 
 dog_other.save!
 dog_updated = StringAnimal.find(dog.id)
 assert_equal "dog", dog_updated.species
+assert_equal "dog", dog_updated.attributes[:species]
 assert_match /species: "dog"/, dog_updated.inspect
 
 assert_equal "dog", client[:animals].find(_id: dog.id).first["species"]
@@ -52,6 +60,7 @@ assert_equal 1, client[:animals].find(species: "dog").count
 
 bird = SymbolAnimal.create(species: "bird")
 assert_equal :bird, bird.species
+assert_equal :bird, bird.attributes["species"]
 assert_match /species: :bird/, bird.inspect
 
 bird_other = StringAnimal.find(bird.id)
@@ -61,6 +70,7 @@ assert_match /species: "tori"/, bird_other.inspect
 
 bird_updated = SymbolAnimal.find(bird.id)
 assert_equal :tori, bird_updated.species
+assert_equal "tori", bird_updated.attributes[:species]
 assert_match /species: "tori"/, bird_updated.inspect
 
 assert_equal "tori", client[:animals].find(_id: bird.id).first["species"]
@@ -73,10 +83,12 @@ assert_equal 1, client[:animals].find(species: "tori").count
 
 rabbit = SymbolAnimal.create(species: "rabbit", foo: true)
 assert_equal :rabbit, rabbit.species
+assert_equal :rabbit, rabbit.attributes["species"]
 assert_match /species: :rabbit/, rabbit.inspect
 
 rabbit_other = StringAnimal.find(rabbit.id)
 assert_equal "rabbit", rabbit_other.species
+assert_equal :rabbit, rabbit_other.attributes[:species]
 assert_match /species: :rabbit/, rabbit_other.inspect
 
 rabbit_other.foo = !rabbit_other.foo
@@ -84,6 +96,7 @@ rabbit_other.save!
 
 rabbit_updated = SymbolAnimal.find(rabbit.id)
 assert_equal :rabbit, rabbit_updated.species
+assert_equal :rabbit, rabbit_updated.attributes[:species]
 assert_match /species: :rabbit/, rabbit_updated.inspect
 
 assert_equal :rabbit, client[:animals].find(_id: rabbit.id).first["species"]
