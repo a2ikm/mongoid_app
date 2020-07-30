@@ -198,3 +198,25 @@ begin
 ensure
   BSON::Registry.register(BSON::Symbol::BSON_TYPE, original_type)
 end
+
+# GROUP BY
+
+client[:animals].insert_one({ species: "fox", created_at: Time.now })
+client[:animals].insert_one({ species: :fox,  created_at: Time.now })
+
+client[:animals].insert_one({ species: :racoon,  created_at: Time.now })
+client[:animals].insert_one({ species: "racoon", created_at: Time.now })
+
+count_map = client[:animals].aggregate([
+  {
+    :$group => {
+      _id: "$species",
+      count: { :$sum => 1 },
+    },
+  },
+]).each_with_object({}) do |doc, s|
+      s[doc["_id"]] = doc["count"]
+    end
+assert_equal 2, count_map["fox"]    # first inserted document has "fox"
+assert_equal 2, count_map[:racoon]  # first inserted document has :racoon
+
