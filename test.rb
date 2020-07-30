@@ -240,3 +240,17 @@ begin
 ensure
   BSON::Registry.register(BSON::Symbol::BSON_TYPE, original_type)
 end
+
+# distinct
+
+count_map = client[:animals].distinct("species").to_a.each_with_object({}) do |species, s|
+  s[species.to_s] ||= 0
+  s[species.to_s] += 1
+end
+
+count_map.each do |species, count|
+  assert_equal 1, count
+end
+
+assert_equal 1, count_map["fox"]
+assert_equal 1, count_map["racoon"]
