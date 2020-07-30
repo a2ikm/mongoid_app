@@ -220,3 +220,23 @@ count_map = client[:animals].aggregate([
 assert_equal 2, count_map["fox"]    # first inserted document has "fox"
 assert_equal 2, count_map[:racoon]  # first inserted document has :racoon
 
+begin
+  original_type = BSON::Registry.get(BSON::Symbol::BSON_TYPE)
+  BSON::Registry.register(BSON::Symbol::BSON_TYPE, ::String)
+
+  count_map2 = client[:animals].aggregate([
+    {
+      :$group => {
+        _id: "$species",
+        count: { :$sum => 1 },
+      },
+    },
+  ]).each_with_object({}) do |doc, s|
+        s[doc["_id"]] = doc["count"]
+      end
+  # keys are unified to string
+  assert_equal 2, count_map2["fox"]
+  assert_equal 2, count_map2["racoon"]
+ensure
+  BSON::Registry.register(BSON::Symbol::BSON_TYPE, original_type)
+end
